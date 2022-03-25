@@ -149,7 +149,34 @@ public:
     
     return 0;
   }
-  
+
+  // Function to store in the array dfs_order the DFS ordering of the tree
+  void get_DFS(int *parent, int *dfs_order) {
+    unsigned int n = this->nodes();
+    int cnt=0;
+    stack <unsigned int> s;
+    s.push(0); // Root      
+
+    while(!s.empty()) {
+      int curr = s.top(); s.pop();
+      dfs_order[cnt++] = curr;
+      
+      int first = this->getNodeFirst(curr);
+      int last = this->getNodeLast(curr);
+
+      // The neighbors are traversed in ccw order starting from the parent's edge
+      for(int i = parent[curr]-1; i != parent[curr];) {
+	if(i < first) i = last;
+
+    	unsigned int tgt = this->getEdgeTgt(i);
+    	if(i != parent[curr]) {
+    	  s.push(tgt);
+	}
+	else break;
+	i--;
+      }
+    }
+  }
 };
 
 #endif
