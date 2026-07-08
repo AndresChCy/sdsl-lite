@@ -241,8 +241,11 @@ namespace sdsl
 				m_B_star_st.swap(B_star_local_st);
 				m_B_star_st.set_vector(&m_B_star);
 
+			
 				delete[] count_edges  ;
+			
 				delete[] references ;
+		
 				delete[] parent ;
 			}
 

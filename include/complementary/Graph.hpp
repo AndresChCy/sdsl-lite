@@ -38,11 +38,12 @@ public:
     this->E = new Edge[2*m];
   }
 
-  ~Graph(){
-      delete this->V;
-      delete this->E;
+~Graph(){
+      delete[] this->V;
+      delete[] this->E;
   }
 
+  
   unsigned int vertices() {
     return n;
   }
