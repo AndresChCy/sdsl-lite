@@ -38,6 +38,11 @@ public:
     this->E = new Edge[2*m];
   }
 
+  ~Graph(){
+      delete this->V;
+      delete this->E;
+  }
+
   unsigned int vertices() {
     return n;
   }
@@ -349,7 +354,36 @@ public:
 
     return S;
   }
+
+  bool neighbours( int nodo1, int nodo2){
+    int first1 = getVertexFirst(nodo1);
+    int first2 = getVertexFirst(nodo2);
+    int last1 = getVertexLast(nodo1);
+    int last2 = getVertexLast(nodo2);
+
+    int ite, idx, nodo_trg;
+    if (last2 - first2 < last1 - first1){
+      ite = last2-first2 + 1;
+      idx = first2;
+      nodo_trg = nodo1;
+    }
+    else {
+      ite = last1-first1 +1 ;
+      idx = first1;
+      nodo_trg = nodo2;
+    }
+    for (int i = 0; i < ite; i++){
+      if (getEdgeTgt(i+idx) == nodo_trg) return true;
+    }
+    return false;
+}
+
+int degree(int nodo){
+  return getVertexLast(nodo) - getVertexFirst(nodo) + 1; 
+}
   
 };
+
+
 
 #endif
