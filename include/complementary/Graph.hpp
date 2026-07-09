@@ -280,7 +280,7 @@ public:
     return t;
   }
 
-  void connected_graph() {
+  bool connected_graph() {
     unsigned int n = this->vertices();
     stack <unsigned int> s;
     char *visited = new char[n]();
@@ -315,6 +315,8 @@ public:
       n-num_vertices << endl;
 
     delete[] visited;
+
+    return num_vertices == 0;
   }
 
   int_vector<> ps_tree_encoding() {
