@@ -26,9 +26,7 @@ private:
   unsigned int m; // Number of edges in the tree
 
 public:
-  Graph () {
-    this->n = 0;
-    this->m = 0;
+  Graph () : V(nullptr), E(nullptr), n(0), m(0) {
   }
 
   Graph (unsigned int n, unsigned int m) {
@@ -36,6 +34,42 @@ public:
     this->m = m;
     this->V = new Vertex[n];
     this->E = new Edge[2*m];
+  }
+
+  // Graph owns raw dynamic memory (V, E). The compiler-generated copy
+  // constructor/assignment would just copy the pointers (shallow copy),
+  // so two Graph objects would end up pointing at the same V/E arrays.
+  // Whichever one is destroyed first frees the memory; the second
+  // destructor call then double-frees it, which is exactly what was
+  // causing the segfault after constructing pemb (pemb(Graph g) took the
+  // graph BY VALUE, silently making such a shallow copy). We disallow
+  // copying entirely and provide move semantics instead, so accidental
+  // copies become compile errors rather than runtime crashes.
+  Graph(const Graph&) = delete;
+  Graph& operator=(const Graph&) = delete;
+
+  Graph(Graph&& other) noexcept
+      : V(other.V), E(other.E), n(other.n), m(other.m) {
+    other.V = nullptr;
+    other.E = nullptr;
+    other.n = 0;
+    other.m = 0;
+  }
+
+  Graph& operator=(Graph&& other) noexcept {
+    if (this != &other) {
+      delete[] this->V;
+      delete[] this->E;
+      V = other.V;
+      E = other.E;
+      n = other.n;
+      m = other.m;
+      other.V = nullptr;
+      other.E = nullptr;
+      other.n = 0;
+      other.m = 0;
+    }
+    return *this;
   }
 
 ~Graph(){
@@ -240,6 +274,9 @@ public:
     	}
     }
     
+    delete[] visited;
+    delete[] edges;
+
     return t;
   }
 
@@ -276,6 +313,8 @@ public:
     
     cout << "unvisited vertices: " << num_vertices << ", visited vertices: " <<
       n-num_vertices << endl;
+
+    delete[] visited;
   }
 
   int_vector<> ps_tree_encoding() {
@@ -352,6 +391,8 @@ public:
       if(S[i] == OPEN_PAR) S[i] = CLOSE_PAR;
       else if(S[i] == CLOSE_PAR) S[i] = OPEN_PAR;
     }
+
+    delete[] visited;
 
     return S;
   }

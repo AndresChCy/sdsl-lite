@@ -100,7 +100,16 @@ namespace sdsl
 				//! Default constructor
 				pemb() {};
 
-			pemb(Graph g)
+			// NOTE: taken by reference on purpose. Graph is expensive to copy
+			// (raw arrays sized by vertices/edges) and now has its copy
+			// constructor disabled (see Graph.hpp) precisely because this
+			// constructor used to take it "by value", which silently made a
+			// shallow copy sharing the same underlying V/E arrays as the
+			// caller's Graph. This constructor mutates the graph it's given
+			// (that's expected/by design), and the caller is expected to
+			// discard/destroy its Graph afterwards, as benchmarks/example.cpp
+			// already does.
+			pemb(Graph& g)
 			{
 				m_vertices = g.vertices();
 				m_edges = g.edges();

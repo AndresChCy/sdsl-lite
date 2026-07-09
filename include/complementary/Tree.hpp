@@ -17,14 +17,47 @@ private:
   unsigned int n; // Number of nodes in the tree
                   // The number of edges is n-1
 public:
-  Tree() {
-    this->n = 0;
+  Tree() : V(nullptr), E(nullptr), n(0) {
   }
   
   Tree(unsigned int n) {
     this->n = n;
     this->V = new Vertex[n];
     this->E = new Edge[2*(n-1)];
+  }
+
+  // Same rationale as Graph (see Graph.hpp): Tree owns raw dynamic memory
+  // and previously had no destructor at all, so every V/E array allocated
+  // by a Tree leaked for the lifetime of the process. Disallow copying
+  // (which would anyway just shallow-copy the pointers) and add move
+  // semantics + a destructor so the memory is actually freed.
+  Tree(const Tree&) = delete;
+  Tree& operator=(const Tree&) = delete;
+
+  Tree(Tree&& other) noexcept
+      : V(other.V), E(other.E), n(other.n) {
+    other.V = nullptr;
+    other.E = nullptr;
+    other.n = 0;
+  }
+
+  Tree& operator=(Tree&& other) noexcept {
+    if (this != &other) {
+      delete[] V;
+      delete[] E;
+      V = other.V;
+      E = other.E;
+      n = other.n;
+      other.V = nullptr;
+      other.E = nullptr;
+      other.n = 0;
+    }
+    return *this;
+  }
+
+  ~Tree() {
+    delete[] V;
+    delete[] E;
   }
   
   unsigned int nodes() {
