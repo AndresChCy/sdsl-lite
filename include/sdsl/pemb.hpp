@@ -119,6 +119,7 @@ namespace sdsl
 				unsigned int *count_edges = new unsigned int[2 *(m_vertices - 1)]();
 				unsigned int *references = new unsigned int[2 *(m_vertices - 1)]();
 				unsigned int init = 0;
+				
 
 				Tree t = g.dfs_spanning_tree(init, parent, count_edges, references);
 
